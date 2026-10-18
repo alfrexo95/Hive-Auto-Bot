@@ -23,7 +23,6 @@ if not POSTING_KEY:
 hive = Hive(keys=[POSTING_KEY], node="https://api.hive.blog")
 account = Account(USERNAME, blockchain_instance=hive)
 
-# --- TEXTOS Y CONTENIDO ---
 MY_BIO = {
     "name": "PredathorHaley 🇨🇺",
     "about": "Ex-special forces, close protection, MMA & Muay Thai. Building freedom tech with Termux on low resources from Cuba. Documenting the reality of the blockade and using crypto to help vulnerable families. ⚡ #Bitcoin #Nostr #Hive",
@@ -56,7 +55,6 @@ FINANCIAL_QUOTES = [
 
 HIVE_LEADERS = ["@leofinance", "@khaleelkazi", "@theycallmedan", "@taskmaster4450"]
 
-# --- FUNCIONES DEL SISTEMA ---
 def load_state():
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, "r") as f:
@@ -71,13 +69,11 @@ def check_rc():
     rc = account.get_rc_manabar()
     rc_pct = (rc['current_mana'] / rc['max_mana']) * 100
     print(f"🔋 RC: {rc_pct:.2f}%")
-    # Si el RC baja del 20%, abortamos para no bloquear la cuenta
-    if rc_pct < 20.0:
+    if rc_pct < 15.0:
         print("⚠️ RC muy bajos. Se cancela la acción para proteger la cuenta.")
         return False
     return True
 
-# --- FUNCIONES DE PUBLICACIÓN ---
 def update_profile():
     print("👤 Actualizando perfil con la bio...")
     try:
@@ -100,18 +96,24 @@ def get_news(url):
 
 def post_news():
     title, link, desc = get_news("https://cointelegraph.com/rss")
-    if not title: return
+    if not title: 
+        print("❌ No se pudo obtener la noticia.")
+        return False
+    
     body = f"**{title}**\n\n{desc}\n\n🔗 **Source:** [{link}]({link})\n\n---\n*Automated crypto news by @predathorhaley.*\n#bitcoin #crypto #news #leofinance"
     clean_title = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')
     permlink = f"news-{clean_title[:40]}-{int(time.time())}"
+    
     try:
         print(f"🚀 Noticia: {title[:50]}")
         hive.post(title=title[:100], body=body, author=USERNAME, permlink=permlink, tags=["bitcoin", "crypto", "news", "leofinance"], app="hive-bot/2.0")
-        time.sleep(2)
+        time.sleep(3)
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        print("✅ Publicado con éxito.")
+        return True
     except Exception as e:
         print(f"❌ Error: {e}")
-            return False
+        return False
 
 def post_termux_story():
     story = random.choice(TERMUX_STORIES)
@@ -120,11 +122,13 @@ def post_termux_story():
     try:
         print("🚀 Publicando historia de Termux/Resiliencia...")
         hive.post(title="Building Tech with Termux from Cuba", body=body, author=USERNAME, permlink=permlink, tags=["termux", "linux", "crypto", "hive", "freedomtech"], app="hive-bot/2.0")
-        time.sleep(2)
+        time.sleep(3)
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        print("✅ Publicado con éxito.")
+        return True
     except Exception as e:
         print(f"❌ Error: {e}")
-            return False
+        return False
 
 def post_financial_quote():
     quote = random.choice(FINANCIAL_QUOTES)
@@ -133,11 +137,13 @@ def post_financial_quote():
     try:
         print("🚀 Publicando frase financiera...")
         hive.post(title="Daily Crypto Wisdom", body=body, author=USERNAME, permlink=permlink, tags=["crypto", "bitcoin", "finance", "hive", "leofinance"], app="hive-bot/2.0")
-        time.sleep(2)
+        time.sleep(3)
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        print("✅ Publicado con éxito.")
+        return True
     except Exception as e:
         print(f"❌ Error: {e}")
-            return False
+        return False
 
 def post_cuba_campaign():
     state = load_state()
@@ -147,16 +153,15 @@ def post_cuba_campaign():
         files = sorted([f for f in os.listdir('media') if f.lower().endswith(valid_ext) and f != 'LEEME.txt'])
     except FileNotFoundError:
         print("❌ Carpeta media no encontrada.")
-        return
+        return False
         
     if not files:
         print("❌ No hay archivos multimedia en media/")
-        return
+        return False
         
     idx = state.get("media_index", 0) % len(files)
     selected_file = files[idx]
     
-    # Corrección de nombres con espacios o tildes
     safe_filename = urllib.parse.quote(selected_file)
     media_url = f"{REPO_URL}{safe_filename}"
     
@@ -174,18 +179,19 @@ def post_cuba_campaign():
     try:
         print(f"🚀 Campaña Cuba con evidencia: {selected_file}")
         hive.post(title="Help Cuban Families: The Reality of the Crisis", body=body, author=USERNAME, permlink=permlink, tags=["cuba", "solidarity", "bitcoin", "hive", "leofinance"], app="hive-bot/2.0")
-        time.sleep(2)
+        time.sleep(3)
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
         
         state["media_index"] = idx + 1
         save_state(state)
+        print("✅ Publicado con éxito.")
+        return True
     except Exception as e:
         print(f"❌ Error en campaña: {e}")
-            return False
+        return False
 
 def engage_elite():
     try:
-        # Buscamos posts populares en las etiquetas top de Hive
         results = hive.get_discussions("created", "leofinance", limit=5)
         for post in results:
             if post["author"] == USERNAME: continue
@@ -198,14 +204,17 @@ def engage_elite():
             ])
             print(f"💬 Comentando e interactuando con @{post['author']}...")
             hive.post(title="", body=comment_body, author=USERNAME, permlink=f"re-{post['author']}-{int(time.time())}", reply_identifier=f"@{post['author']}/{post['permlink']}", tags=["hive"])
-            time.sleep(2)
+            time.sleep(3)
             hive.vote(weight=5000, identifier=f"@{post['author']}/{post['permlink']}", voter=USERNAME)
-            break
+            print("✅ Interacción completada.")
+            return True
+            
+        print("No se encontraron posts para interactuar.")
+        return False
     except Exception as e:
         print(f"❌ Error en interacción: {e}")
-            return False
+        return False
 
-# --- LÓGICA DE EJECUCIÓN EN BUCLE INFINITO ---
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "update_profile":
         update_profile()
@@ -213,7 +222,6 @@ if __name__ == "__main__":
 
     if not check_rc(): exit(0)
     
-    # Lista de acciones en el orden del bucle
     actions = [
         post_news,
         post_termux_story,
@@ -225,11 +233,12 @@ if __name__ == "__main__":
     state = load_state()
     current_action = state.get("action_index", 0)
     
-    # Ejecutar la acción correspondiente
     print(f"🔄 Ejecutando acción {current_action + 1}/{len(actions)} del bucle...")
-    actions[current_action]()
+    success = actions[current_action]()
     
-    # Avanzar el índice para la próxima vez (bucle infinito)
-    state["action_index"] = (current_action + 1) % len(actions)
-    save_state(state)
-    print(f"✅ Acción completada. Próxima acción: {state['action_index'] + 1}")
+    if success:
+        state["action_index"] = (current_action + 1) % len(actions)
+        save_state(state)
+        print(f"✅ Acción completada. Próxima acción: {state['action_index'] + 1}")
+    else:
+        print("⚠️ La acción falló. No se avanza de paso para no saltarse contenido.")
