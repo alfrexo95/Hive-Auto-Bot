@@ -27,7 +27,7 @@ account = Account(USERNAME, blockchain_instance=hive)
 
 # --- CONFIGURACIÓN DEL BOT ---
 MIN_VOTING_POWER = 80.0  
-MIN_RC = 15.0            
+MIN_RC = 25.0            
 MAX_POST_AGE_HOURS = 3   
 TARGET_COMMUNITIES = ["hive-167922", "hive-150207", "hive-148441"] 
 
@@ -105,7 +105,8 @@ def post_with_community(title, body, permlink, tags, community_id):
             permlink=permlink,
             tags=tags,
             app="hive-bot/2.0",
-            beneficiaries=[{"account": USERNAME, "weight": 10000}] 
+            beneficiaries=[{"account": USERNAME, "weight": 10000}],
+            percent_hbd=0  # 100% Hive Power (HP) en lugar de HBD
         )
         print(f"✅ Publicado en la comunidad {community_id} con éxito.")
         return True
