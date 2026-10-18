@@ -190,7 +190,7 @@ def post_cuba_campaign():
     
     message = random.choice(CUBA_MESSAGES)
     
-    body = f"""🚨 **Help Cuban Families Survive the Crisis** 🇨🇺\n\n{message}\n\n{media_markdown}**How you can help:**\nIf you want to support this cause, please **upvote this post**. Every vote helps this message reach more people.\n\n⚡ **Lightning Donations:** olivinepug15@primal.net\n\n#cuba #solidarity #bitcoin #hive #humanitarian"""
+    body = f"""🚨 **Help Cuban Families Survive the Crisis** 🇨🇺\n\n{message}\n\n{media_markdown}**How you can help:**\nIf you want to support this cause, please **upvote this post**. Every vote helps this message reach more people.\n\n**Accepted Donations:**\n₿ **BTC:** `bc1qt3rukpe7qp737zj5j5xpxxmcqv90cfefhg5e00`\nΞ **ETH:** `0xA5E6eB31868A85127B1ED82b8C760193356206ED`\nŁ **LTC:** `LcwAfm4xeJt5sHHVHAGN4qfiv7ruYKzqTe`\n⚡ **Lightning:** `olivinepug15@primal.net`\n\n#cuba #solidarity #bitcoin #hive #humanitarian"""
     
     permlink = f"help-cuban-families-{int(time.time())}"
     success = post_with_community("Help Cuban Families: The Reality of the Crisis", body, permlink, ["cuba", "solidarity", "bitcoin", "hive", "humanitarian"], "hive-148441")
