@@ -106,7 +106,7 @@ def post_news():
     permlink = f"news-{clean_title[:40]}-{int(time.time())}"
     try:
         print(f"🚀 Noticia: {title[:50]}")
-        hive.post(title=title[:100], body=body, author=USERNAME, permlink=permlink, tags=["bitcoin", "crypto", "news", "leofinance"], app="hive-bot/2.0")
+        hive.post(title=title[:100], body=body, author=account, permlink=permlink, tags=["bitcoin", "crypto", "news", "leofinance"], app="hive-bot/2.0")
         time.sleep(2)
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}")
     except Exception as e:
@@ -118,7 +118,7 @@ def post_termux_story():
     body = f"{story}\n\n---\n*Building freedom tech from Cuba.*\n#termux #linux #crypto #hive #freedomtech"
     try:
         print("🚀 Publicando historia de Termux/Resiliencia...")
-        hive.post(title="Building Tech with Termux from Cuba", body=body, author=USERNAME, permlink=permlink, tags=["termux", "linux", "crypto", "hive", "freedomtech"], app="hive-bot/2.0")
+        hive.post(title="Building Tech with Termux from Cuba", body=body, author=account, permlink=permlink, tags=["termux", "linux", "crypto", "hive", "freedomtech"], app="hive-bot/2.0")
         time.sleep(2)
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}")
     except Exception as e:
@@ -130,7 +130,7 @@ def post_financial_quote():
     body = f"💡 **Crypto & Financial Wisdom**\n\n> {quote}\n\n---\n*Stay humble, stack sats.*\n#crypto #bitcoin #finance #hive #leofinance"
     try:
         print("🚀 Publicando frase financiera...")
-        hive.post(title="Daily Crypto Wisdom", body=body, author=USERNAME, permlink=permlink, tags=["crypto", "bitcoin", "finance", "hive", "leofinance"], app="hive-bot/2.0")
+        hive.post(title="Daily Crypto Wisdom", body=body, author=account, permlink=permlink, tags=["crypto", "bitcoin", "finance", "hive", "leofinance"], app="hive-bot/2.0")
         time.sleep(2)
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}")
     except Exception as e:
@@ -170,7 +170,7 @@ def post_cuba_campaign():
     permlink = f"help-cuban-families-{int(time.time())}"
     try:
         print(f"🚀 Campaña Cuba con evidencia: {selected_file}")
-        hive.post(title="Help Cuban Families: The Reality of the Crisis", body=body, author=USERNAME, permlink=permlink, tags=["cuba", "solidarity", "bitcoin", "hive", "leofinance"], app="hive-bot/2.0")
+        hive.post(title="Help Cuban Families: The Reality of the Crisis", body=body, author=account, permlink=permlink, tags=["cuba", "solidarity", "bitcoin", "hive", "leofinance"], app="hive-bot/2.0")
         time.sleep(2)
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}")
         
@@ -193,7 +193,7 @@ def engage_elite():
                 "Spot on. The separation of money and state is inevitable. Upvoted! 💯"
             ])
             print(f"💬 Comentando e interactuando con @{post['author']}...")
-            hive.post(title="", body=comment_body, author=USERNAME, permlink=f"re-{post['author']}-{int(time.time())}", reply_identifier=f"@{post['author']}/{post['permlink']}", tags=["hive"])
+            hive.post(title="", body=comment_body, author=account, permlink=f"re-{post['author']}-{int(time.time())}", reply_identifier=f"@{post['author']}/{post['permlink']}", tags=["hive"])
             time.sleep(2)
             hive.vote(weight=5000, identifier=f"@{post['author']}/{post['permlink']}")
             break
