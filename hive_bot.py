@@ -111,6 +111,7 @@ def post_news():
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
     except Exception as e:
         print(f"❌ Error: {e}")
+            return False
 
 def post_termux_story():
     story = random.choice(TERMUX_STORIES)
@@ -123,6 +124,7 @@ def post_termux_story():
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
     except Exception as e:
         print(f"❌ Error: {e}")
+            return False
 
 def post_financial_quote():
     quote = random.choice(FINANCIAL_QUOTES)
@@ -135,6 +137,7 @@ def post_financial_quote():
         hive.vote(weight=10000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
     except Exception as e:
         print(f"❌ Error: {e}")
+            return False
 
 def post_cuba_campaign():
     state = load_state()
@@ -178,6 +181,7 @@ def post_cuba_campaign():
         save_state(state)
     except Exception as e:
         print(f"❌ Error en campaña: {e}")
+            return False
 
 def engage_elite():
     try:
@@ -199,6 +203,7 @@ def engage_elite():
             break
     except Exception as e:
         print(f"❌ Error en interacción: {e}")
+            return False
 
 # --- LÓGICA DE EJECUCIÓN EN BUCLE INFINITO ---
 if __name__ == "__main__":
