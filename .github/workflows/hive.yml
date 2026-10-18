@@ -1,8 +1,8 @@
-name: Hive Master Bot
+name: Hive Infinite Bot
 
 on:
   schedule:
-    - cron: '0 0,4,8,12,16,20 * * *' # Se ejecuta 6 veces al día
+    - cron: '0 0,4,8,12,16,20 * * *' # Se despierta 6 veces al día
   workflow_dispatch:
 
 permissions:
@@ -23,8 +23,8 @@ jobs:
           HIVE_POSTING_KEY: ${{ secrets.HIVE_POSTING_KEY }}
         run: python hive_bot.py
         
-      - name: Guardar estado de imágenes
+      - name: Guardar estado del bucle
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto-update: Estado del bot (imágenes y rotación)"
+          commit_message: "Auto-update: Avanzando en el bucle infinito"
           file_pattern: 'hive_state.json'

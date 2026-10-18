@@ -61,7 +61,7 @@ def load_state():
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, "r") as f:
             return json.load(f)
-    return {"media_index": 0}
+    return {"media_index": 0, "action_index": 0}
 
 def save_state(state):
     with open(STATE_FILE, "w") as f:
@@ -200,7 +200,7 @@ def engage_elite():
     except Exception as e:
         print(f"❌ Error en interacción: {e}")
 
-# --- LÓGICA DE EJECUCIÓN ---
+# --- LÓGICA DE EJECUCIÓN EN BUCLE INFINITO ---
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "update_profile":
         update_profile()
@@ -208,19 +208,23 @@ if __name__ == "__main__":
 
     if not check_rc(): exit(0)
     
-    # Rotación basada en la hora UTC (El bot corre cada 4 horas)
-    hora = time.gmtime().tm_hour
-    print(f"⏰ Hora UTC: {hora}")
+    # Lista de acciones en el orden del bucle
+    actions = [
+        post_news,
+        post_termux_story,
+        engage_elite,
+        post_financial_quote,
+        post_cuba_campaign
+    ]
     
-    if hora == 0:
-        post_news()
-    elif hora == 4:
-        post_termux_story()
-    elif hora == 8:
-        engage_elite()
-    elif hora == 12:
-        post_financial_quote()
-    elif hora == 16:
-        post_cuba_campaign()
-    elif hora == 20:
-        post_news()
+    state = load_state()
+    current_action = state.get("action_index", 0)
+    
+    # Ejecutar la acción correspondiente
+    print(f"🔄 Ejecutando acción {current_action + 1}/{len(actions)} del bucle...")
+    actions[current_action]()
+    
+    # Avanzar el índice para la próxima vez (bucle infinito)
+    state["action_index"] = (current_action + 1) % len(actions)
+    save_state(state)
+    print(f"✅ Acción completada. Próxima acción: {state['action_index'] + 1}")
