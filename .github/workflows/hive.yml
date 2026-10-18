@@ -1,25 +1,30 @@
-name: Hive News Bot
+name: Hive Master Bot
 
 on:
   schedule:
-    - cron: '0 */12 * * *' # Se ejecuta cada 12 horas
-  workflow_dispatch: # Permite ejecución manual
+    - cron: '0 0,8,16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Configurar Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
-      - name: Instalar dependencias
-        run: pip install beem
-        
-      - name: Ejecutar bot de Hive
+      - run: pip install beem
+      
+      - name: Ejecutar Súper Bot
         env:
           HIVE_POSTING_KEY: ${{ secrets.HIVE_POSTING_KEY }}
         run: python hive_bot.py
+        
+      - name: Guardar estado de imágenes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-update: Siguiente imagen en cola"
+          file_pattern: 'hive_state.json'
