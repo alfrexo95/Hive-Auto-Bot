@@ -2,7 +2,7 @@ name: Hive Master Bot
 
 on:
   schedule:
-    - cron: '0 0,8,16 * * *'
+    - cron: '0 0,4,8,12,16,20 * * *' # Se ejecuta 6 veces al día
   workflow_dispatch:
 
 permissions:
@@ -26,5 +26,5 @@ jobs:
       - name: Guardar estado de imágenes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto-update: Siguiente imagen en cola"
+          commit_message: "Auto-update: Estado del bot (imágenes y rotación)"
           file_pattern: 'hive_state.json'
