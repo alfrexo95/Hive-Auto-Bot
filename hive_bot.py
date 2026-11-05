@@ -19,7 +19,7 @@ REPO_URL = "https://raw.githubusercontent.com/alfrexo95/Hive-Auto-Bot/main/media
 STATE_FILE = "hive_state.json"
 
 if not POSTING_KEY:
-    print("❌ Error: Falta HIVE_POSTING_KEY")
+    print("❌ Error: Falta HIVE_POSTING_KEY en las variables de entorno (GitHub Secrets).")
     exit(1)
 
 hive = Hive(keys=[POSTING_KEY], node="https://api.hive.blog")
@@ -106,9 +106,9 @@ def post_with_community(title, body, permlink, tags, community_id):
             permlink=permlink,
             tags=tags,
             app="hive-bot/2.0",
-            community=community_id,  # Especificar la comunidad aquí
+            community=community_id,
             beneficiaries=[{"account": USERNAME, "weight": 10000}],
-            percent_hbd=0  # 100% Hive Power (HP) en lugar de HBD
+            percent_hbd=0
         )
         print(f"✅ Publicado en la comunidad {community_id} con éxito.")
         return True
@@ -140,7 +140,7 @@ def post_news():
 
     success = post_with_community(title, body, permlink, ["bitcoin", "crypto", "news", "leofinance", "hive-167922"], "hive-167922")
     if success:
-        hive.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        account.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}")
         print("👍 Voto propio emitido.")
     return success
 
@@ -151,7 +151,7 @@ def post_termux_story():
 
     success = post_with_community("Building Tech with Termux from Cuba", body, permlink, ["termux", "linux", "crypto", "hive", "freedomtech"], "hive-148441")
     if success:
-        hive.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        account.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}")
         print("👍 Voto propio emitido.")
     return success
 
@@ -162,7 +162,7 @@ def post_financial_quote():
 
     success = post_with_community("Daily Crypto Wisdom", body, permlink, ["crypto", "bitcoin", "finance", "leofinance", "hive-167922"], "hive-167922")
     if success:
-        hive.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        account.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}")
         print("👍 Voto propio emitido.")
     return success
 
@@ -197,7 +197,7 @@ def post_cuba_campaign():
     permlink = f"help-cuban-families-{int(time.time())}"
     success = post_with_community("Help Cuban Families: The Reality of the Crisis", body, permlink, ["cuba", "solidarity", "bitcoin", "hive", "humanitarian"], "hive-148441")
     if success:
-        hive.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        account.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}")
         state["media_index"] = idx + 1
         save_state(state)
         print("✅ Campaña publicada y auto-votada.")
@@ -230,7 +230,7 @@ def engage_elite():
                     tags=["hive"]
                 )
                 time.sleep(3)
-                hive.vote(weight=3000, identifier=f"@{post['author']}/{post['permlink']}", voter=USERNAME)
+                account.vote(weight=3000, identifier=f"@{post['author']}/{post['permlink']}")
                 print("✅ Interacción completada (comentario + voto).")
                 return True
 
