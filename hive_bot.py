@@ -85,26 +85,28 @@ def get_rc_percentage():
 def check_health():
     vp = get_voting_power()
     rc_pct = get_rc_percentage()
-    
+
     if vp < MIN_VOTING_POWER:
         print(f"⚠️ Voting Power por debajo del {MIN_VOTING_POWER}%. Se posponen las acciones.")
         return False
     if rc_pct < MIN_RC:
         print(f"⚠️ Resource Credits por debajo del {MIN_RC}%. Se cancelan las acciones.")
         return False
-    
+
     print("✅ Salud de la cuenta óptima. Procediendo.")
     return True
 
 def post_with_community(title, body, permlink, tags, community_id):
     try:
         full_body = f"{body}\n\n---\n*Published via Hive Auto Bot. Created by PredathorHaley.*"
-        account.post(
+        hive.post(
             title=title[:100],
             body=full_body,
+            author=USERNAME,
             permlink=permlink,
             tags=tags,
             app="hive-bot/2.0",
+            community=community_id,  # Especificar la comunidad aquí
             beneficiaries=[{"account": USERNAME, "weight": 10000}],
             percent_hbd=0  # 100% Hive Power (HP) en lugar de HBD
         )
@@ -131,14 +133,14 @@ def post_news():
     if not title:
         print("❌ No se pudo obtener la noticia.")
         return False
-    
+
     body = f"**{title}**\n\n{desc}\n\n🔗 **Source:** [{link}]({link})\n\n#bitcoin #crypto #news #leofinance"
     clean_title = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')
     permlink = f"news-{clean_title[:40]}-{int(time.time())}"
-    
+
     success = post_with_community(title, body, permlink, ["bitcoin", "crypto", "news", "leofinance", "hive-167922"], "hive-167922")
     if success:
-        account.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        hive.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
         print("👍 Voto propio emitido.")
     return success
 
@@ -146,10 +148,10 @@ def post_termux_story():
     story = random.choice(TERMUX_STORIES)
     permlink = f"termux-journey-{int(time.time())}"
     body = f"{story}\n\n#termux #linux #crypto #hive #freedomtech"
-    
+
     success = post_with_community("Building Tech with Termux from Cuba", body, permlink, ["termux", "linux", "crypto", "hive", "freedomtech"], "hive-148441")
     if success:
-        account.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        hive.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
         print("👍 Voto propio emitido.")
     return success
 
@@ -157,45 +159,45 @@ def post_financial_quote():
     quote = random.choice(FINANCIAL_QUOTES)
     permlink = f"crypto-wisdom-{int(time.time())}"
     body = f"💡 **Crypto & Financial Wisdom**\n\n> {quote}\n\n#crypto #bitcoin #finance #leofinance"
-    
+
     success = post_with_community("Daily Crypto Wisdom", body, permlink, ["crypto", "bitcoin", "finance", "leofinance", "hive-167922"], "hive-167922")
     if success:
-        account.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        hive.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
         print("👍 Voto propio emitido.")
     return success
 
 def post_cuba_campaign():
     state = load_state()
     valid_ext = ('.jpg', '.jpeg', '.png', '.gif', '.mp4')
-    
+
     try:
         files = sorted([f for f in os.listdir('media') if f.lower().endswith(valid_ext) and f != 'LEEME.txt'])
     except FileNotFoundError:
         print("❌ Carpeta media no encontrada.")
         return False
-    
+
     if not files:
         print("❌ No hay archivos multimedia en media/")
         return False
-    
+
     idx = state.get("media_index", 0) % len(files)
     selected_file = files[idx]
     safe_filename = urllib.parse.quote(selected_file)
     media_url = f"{REPO_URL}{safe_filename}"
-    
+
     if selected_file.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')):
         media_markdown = f"![Evidence]({media_url})\n\n"
     else:
         media_markdown = f"[▶️ **Watch Video Evidence Here**]({media_url})\n\n"
-    
+
     message = random.choice(CUBA_MESSAGES)
-    
+
     body = f"""🚨 **Help Cuban Families Survive the Crisis** 🇨🇺\n\n{message}\n\n{media_markdown}**How you can help:**\nIf you want to support this cause, please **upvote this post**. Every vote helps this message reach more people.\n\n**Accepted Donations:**\n₿ **BTC:** `bc1qt3rukpe7qp737zj5j5xpxxmcqv90cfefhg5e00`\nΞ **ETH:** `0xA5E6eB31868A85127B1ED82b8C760193356206ED`\nŁ **LTC:** `LcwAfm4xeJt5sHHVHAGN4qfiv7ruYKzqTe`\n⚡ **Lightning:** `chieftrait089@walletofsatoshi.com`\n\n#cuba #solidarity #bitcoin #hive #humanitarian"""
-    
+
     permlink = f"help-cuban-families-{int(time.time())}"
     success = post_with_community("Help Cuban Families: The Reality of the Crisis", body, permlink, ["cuba", "solidarity", "bitcoin", "hive", "humanitarian"], "hive-148441")
     if success:
-        account.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
+        hive.vote(weight=5000, identifier=f"@{USERNAME}/{permlink}", voter=USERNAME)
         state["media_index"] = idx + 1
         save_state(state)
         print("✅ Campaña publicada y auto-votada.")
@@ -208,29 +210,30 @@ def engage_elite():
             for post in results:
                 if post["author"] == USERNAME:
                     continue
-                
+
                 post_age_seconds = time.time() - post["created"].timestamp()
                 post_age_hours = post_age_seconds / 3600
-                
+
                 if post_age_hours > MAX_POST_AGE_HOURS:
                     print(f"⏳ Post de @{post['author']} es muy antiguo. Saltando.")
                     continue
-                
+
                 comment_body = random.choice(ELITE_COMMENTS)
                 print(f"💬 Comentando en el post de @{post['author']} en {community}...")
-                
-                account.post(
+
+                hive.post(
                     title="",
                     body=comment_body,
+                    author=USERNAME,
                     permlink=f"re-{post['author']}-{int(time.time())}",
                     reply_identifier=f"@{post['author']}/{post['permlink']}",
                     tags=["hive"]
                 )
                 time.sleep(3)
-                account.vote(weight=3000, identifier=f"@{post['author']}/{post['permlink']}", voter=USERNAME)
+                hive.vote(weight=3000, identifier=f"@{post['author']}/{post['permlink']}", voter=USERNAME)
                 print("✅ Interacción completada (comentario + voto).")
                 return True
-        
+
         print("No se encontraron posts nuevos para interactuar.")
         return False
     except Exception as e:
