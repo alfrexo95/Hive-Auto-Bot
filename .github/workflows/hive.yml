@@ -23,6 +23,22 @@ jobs:
           HIVE_POSTING_KEY: ${{ secrets.HIVE_POSTING_KEY }}
         run: python hive_bot.py
         
+      - name: Register Hive Bot in Predator Hub (optional)
+        if: ${{ secrets.INFRA_HUB_TOKEN != '' }}
+        continue-on-error: true
+        env:
+          HUB_TOKEN: ${{ secrets.INFRA_HUB_TOKEN }}
+          HUB_URL: https://x402-api-wigc.onrender.com
+        run: |
+          set -euo pipefail
+          curl --silent --show-error --fail --max-time 15 \
+            -H "Authorization: Bearer $HUB_TOKEN" -H "Content-Type: application/json" \
+            -d '{"agent_id":"hive-auto-bot","platform":"github-actions","capabilities":["hive.post","hive.engage","content"]}' \
+            "$HUB_URL/infra/agents/register"
+          curl --silent --show-error --fail --max-time 15 \
+            -H "Authorization: Bearer $HUB_TOKEN" -H "Content-Type: application/json" \
+            -d '{}' "$HUB_URL/infra/agents/hive-auto-bot/heartbeat"
+
       - name: Guardar estado del bucle
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
